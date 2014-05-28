@@ -1,16 +1,17 @@
 #include "ofxLabFlexVectorField.h"
 
+using namespace lab;
 
 // these constants are for display
-const float ofxLabFlexVectorField::FORCE_DISPLAY_SCALE     = 5.0f;
-const float ofxLabFlexVectorField::BASELINE_SCALE          = 0.2f;
+const float VectorField::FORCE_DISPLAY_SCALE     = 5.0f;
+const float VectorField::BASELINE_SCALE          = 0.2f;
 
 // default internal to external scale, pixels to internal mapping
-const float ofxLabFlexVectorField::DEFAULT_SCALE           = 0.1f;
+const float VectorField::DEFAULT_SCALE           = 0.1f;
 
 
 //------------------------------------------------------------------------------------
-ofxLabFlexVectorField::ofxLabFlexVectorField() :
+VectorField::VectorField() :
 _fieldWidth(0),
 _fieldHeight(0),
 _fieldSize(0),
@@ -29,13 +30,13 @@ _bClampSinPositive(false)
 
 
 //------------------------------------------------------------------------------------
-ofxLabFlexVectorField::~ofxLabFlexVectorField(){
+VectorField::~VectorField(){
     
 }
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::setupField( int externalWidth, 
+void VectorField::setupField( int externalWidth, 
                                         int externalHeight,
                                         int fieldWidth, 
                                         int fieldHeight ) 
@@ -65,7 +66,7 @@ void ofxLabFlexVectorField::setupField( int externalWidth,
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::zeroField()
+void VectorField::zeroField()
 {
     
 	vector<ofVec2f>::iterator it;
@@ -75,7 +76,7 @@ void ofxLabFlexVectorField::zeroField()
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::fadeField(float fadeAmount)
+void VectorField::fadeField(float fadeAmount)
 {
     
 	vector<ofVec2f>::iterator it;
@@ -85,7 +86,7 @@ void ofxLabFlexVectorField::fadeField(float fadeAmount)
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::randomizeField(float range)
+void VectorField::randomizeField(float range)
 {
 	vector<ofVec2f>::iterator it;
 	for(it = _field.begin(); it != _field.end(); ++it) {
@@ -97,7 +98,7 @@ void ofxLabFlexVectorField::randomizeField(float range)
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::setHorizontalShift( float shiftPct ) {
+void VectorField::setHorizontalShift( float shiftPct ) {
     
     if( shiftPct > 1.0f ) {
         shiftPct -= floor(shiftPct);
@@ -106,17 +107,17 @@ void ofxLabFlexVectorField::setHorizontalShift( float shiftPct ) {
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::setScale( float scale ) {
+void VectorField::setScale( float scale ) {
     _scale = scale;
 }
 
-void ofxLabFlexVectorField::setExternalOffset( ofVec2f offset ) {
+void VectorField::setExternalOffset( ofVec2f offset ) {
     _externalOffset = offset;
 }
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::draw( const ofRectangle& cropSection )
+void VectorField::draw( const ofRectangle& cropSection )
 {
     ofSetColor(0, 0, 0);
     
@@ -220,7 +221,7 @@ void ofxLabFlexVectorField::draw( const ofRectangle& cropSection )
 }
 
 //------------------------------------------------------------------------------------
-ofVec2f ofxLabFlexVectorField::getForceFromPos( float posX,
+ofVec2f VectorField::getForceFromPos( float posX,
                                                 float posY)
 const
 {
@@ -289,7 +290,7 @@ const
 
 
 //------------------------------------------------------------------------------------
-ofVec2f ofxLabFlexVectorField::getInternalSize()
+ofVec2f VectorField::getInternalSize()
 {
     return ofVec2f(_fieldWidth,
                    _fieldHeight);
@@ -297,7 +298,7 @@ ofVec2f ofxLabFlexVectorField::getInternalSize()
 
 
 //------------------------------------------------------------------------------------
-ofVec2f ofxLabFlexVectorField::getExternalSize()
+ofVec2f VectorField::getExternalSize()
 {
     return ofVec2f(_externalWidth,
                    _externalHeight);
@@ -305,14 +306,14 @@ ofVec2f ofxLabFlexVectorField::getExternalSize()
 
 
 //------------------------------------------------------------------------------------
-vector<ofVec2f>* ofxLabFlexVectorField::getField()
+vector<ofVec2f>* VectorField::getField()
 {
     return &_field;
 }
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addForce( float x, 
+void VectorField::addForce( float x, 
                                float y,
 							   ForceType type,
 							   float radius, 
@@ -395,7 +396,7 @@ void ofxLabFlexVectorField::addForce( float x,
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addInwardCircle( float x, 
+void VectorField::addInwardCircle( float x, 
                                       float y, 
                                       float radius, 
                                       float strength)
@@ -404,7 +405,7 @@ void ofxLabFlexVectorField::addInwardCircle( float x,
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addOutwardCircle( float x, 
+void VectorField::addOutwardCircle( float x, 
                                        float y, 
                                        float radius, 
                                        float strength)
@@ -413,7 +414,7 @@ void ofxLabFlexVectorField::addOutwardCircle( float x,
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addClockwiseCircle( float x, 
+void VectorField::addClockwiseCircle( float x, 
                                          float y, 
                                          float radius, 
                                          float strength)
@@ -423,7 +424,7 @@ void ofxLabFlexVectorField::addClockwiseCircle( float x,
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addCounterClockwiseCircle( float x, 
+void VectorField::addCounterClockwiseCircle( float x, 
                                                 float y, 
                                                 float radius, 
                                                 float strength)
@@ -433,7 +434,7 @@ void ofxLabFlexVectorField::addCounterClockwiseCircle( float x,
 
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::setUniformForce( const ofRectangle& area,
+void VectorField::setUniformForce( const ofRectangle& area,
                                       const ofVec2f& force)
 {
     
@@ -461,7 +462,7 @@ void ofxLabFlexVectorField::setUniformForce( const ofRectangle& area,
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::applySinMap( float xRepeat,
+void VectorField::applySinMap( float xRepeat,
                                   float yRepeat,
                                   float xPhase,
                                   float yPhase,
@@ -482,14 +483,14 @@ void ofxLabFlexVectorField::applySinMap( float xRepeat,
 }
 
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::clearSinMap()
+void VectorField::clearSinMap()
 {
     _bUseSinMap = false;
 }
 
 /*
 //------------------------------------------------------------------------------------
-void ofxLabFlexVectorField::addVectorCircle(float x, float y, float vx, float vy, float radius, float strength){
+void VectorField::addVectorCircle(float x, float y, float vx, float vy, float radius, float strength){
 	// LV I am not sure what to make of this....
 	
 	

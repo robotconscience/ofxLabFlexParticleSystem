@@ -1,31 +1,28 @@
 //
-//  ofxLabFlexParticle.cpp
-//  Blooms
-//
-//  Created by rockwell on 10/9/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
+//  Particle.cpp
 
 #include "ofxLabFlexParticle.h"
 
-ofxLabFlexParticle::ofxLabFlexParticle()
+using namespace lab;
+
+Particle::Particle()
 {
     setDefaults();
     set(0.0f, 0.0f);
 }
 
-ofxLabFlexParticle::ofxLabFlexParticle( const ofVec2f& pos )
+Particle::Particle( const ofVec2f& pos )
 {
     setDefaults();
     set(pos);
 }
 
-ofxLabFlexParticle::ofxLabFlexParticle( float x, float y ){
+Particle::Particle( float x, float y ){
     setDefaults();
     set(x,y);
 }
 
-ofxLabFlexParticle::ofxLabFlexParticle( const ofxLabFlexParticleOptions& opts ){
+Particle::Particle( const ParticleOptions& opts ){
     setDefaults();
 	set(opts.pos);
 	damping  = opts.damping;
@@ -35,7 +32,7 @@ ofxLabFlexParticle::ofxLabFlexParticle( const ofxLabFlexParticleOptions& opts ){
 	rotateVelocity = opts.rotateVelocity;
 }
 
-void ofxLabFlexParticle::setDefaults(){
+void Particle::setDefaults(){
     radius = 2;
     damping = 1.0f;
     mass = 1;
@@ -45,7 +42,7 @@ void ofxLabFlexParticle::setDefaults(){
     data = NULL;
 }
 
-void ofxLabFlexParticle::update(){
+void Particle::update(){
     age++;
     
 	// update position and rotation
@@ -59,7 +56,7 @@ void ofxLabFlexParticle::update(){
 	//cout << (*this) << endl;
 }
 
-void ofxLabFlexParticle::draw(){
+void Particle::draw(){
 
     ofSetColor(255, 255, 255);
 	ofCircle(*this, radius );
@@ -68,7 +65,7 @@ void ofxLabFlexParticle::draw(){
     ofDrawBitmapString(ofToString(uniqueID), x - 10, y );
 }
 
-void ofxLabFlexParticle::repel(const ofxLabFlexParticle& b)
+void Particle::repel(const Particle& b)
 {
     // TODO this should be explored, right now it's pretty straight forward
     // and probably doesn't even work that great
@@ -93,7 +90,7 @@ void ofxLabFlexParticle::repel(const ofxLabFlexParticle& b)
 }
 
 
-ofxLabFlexParticle& ofxLabFlexParticle::operator=(const ofxLabFlexParticle& p)
+Particle& Particle::operator=(const Particle& p)
 {
     ofVec3f::operator=(p);
     damping  = p.damping;
@@ -105,32 +102,32 @@ ofxLabFlexParticle& ofxLabFlexParticle::operator=(const ofxLabFlexParticle& p)
     return *this;
 }
 
-void ofxLabFlexParticle::setAge( int _age ){
+void Particle::setAge( int _age ){
     age = _age;
 }
 
-int ofxLabFlexParticle::getAge(){
+int Particle::getAge(){
     return age;
 }
 
-float ofxLabFlexParticle::getStartSeconds() {
+float Particle::getStartSeconds() {
     return startSecond;
 }
 
-void * ofxLabFlexParticle::getData(){
+void * Particle::getData(){
     return data;
 }
 
-void ofxLabFlexParticle::setData( void * data ){
+void Particle::setData( void * data ){
     this->data = data;
 }
 
-unsigned long ofxLabFlexParticle::getUniqueID()
+unsigned long Particle::getUniqueID()
 {
     return uniqueID;
 }
 
-void ofxLabFlexParticle::setUniqueID( unsigned long id )
+void Particle::setUniqueID( unsigned long id )
 {
     uniqueID = id;
 }

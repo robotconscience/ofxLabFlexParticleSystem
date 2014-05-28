@@ -1,24 +1,26 @@
 //
-//  ofxLabFlexParticleSystem.cpp
+//  ParticleSystem.cpp
 //  Blooms
 //
-//  Created by Lucas Vickers on 10/9/12.
+//  Created by Brett Renfer Lucas Vickers
 //  Copyright (c) 2012 Lab at Rockwell. All rights reserved.
 //
 
 #include "ofxLabFlexParticleSystem.h"
 
+using namespace lab;
+
 // min mass for the particle, to prevent particles from having a
 //  0 mass and messing up calculations
-const float ofxLabFlexParticleSystem::MIN_PARTICLE_MASS        = .1;
+const float ParticleSystem::MIN_PARTICLE_MASS        = .1;
 
 // divider for the vec field force.  This allows users to put in vec
 //  field forces of 3, 5, etc - something human readable, and lower
 //  the forces within the field to make it managable.
-const float ofxLabFlexParticleSystem::VEC_FIELD_FORCE_DIVIDER  = 100;
+const float ParticleSystem::VEC_FIELD_FORCE_DIVIDER  = 100;
 
 
-ofxLabFlexParticleSystem::ofxLabFlexParticleSystem()
+ParticleSystem::ParticleSystem()
 {
     _options = 0;
     _nextID = 0;
@@ -32,19 +34,19 @@ ofxLabFlexParticleSystem::ofxLabFlexParticleSystem()
 }
 
 
-void ofxLabFlexParticleSystem::setupOpen( )
+void ParticleSystem::setupOpen( )
 {
     _worldType = OPEN;
 }
 
 
-void ofxLabFlexParticleSystem::setupSquare( const ofVec2f& worldBox )
+void ParticleSystem::setupSquare( const ofVec2f& worldBox )
 {
     _worldType = SQUARE;
     _worldBox = worldBox;
 }
 
-void ofxLabFlexParticleSystem::setupQuad( ofVec2f& topLeft,
+void ParticleSystem::setupQuad( ofVec2f& topLeft,
                                           ofVec2f& bottomLeft,
                                           ofVec2f& topRight,
                                           ofVec2f& bottomRight )
@@ -57,7 +59,7 @@ void ofxLabFlexParticleSystem::setupQuad( ofVec2f& topLeft,
     _worldQuad.br = bottomRight;
 }
 
-void ofxLabFlexParticleSystem::setWallCallback( std::tr1::function<void ( ofxLabFlexParticle* )> func,
+void ParticleSystem::setWallCallback( std::tr1::function<void ( Particle* )> func,
                                          WallCallbackType type,
                                          bool override)
 {
@@ -66,7 +68,7 @@ void ofxLabFlexParticleSystem::setWallCallback( std::tr1::function<void ( ofxLab
     
 }
 
-void ofxLabFlexParticleSystem::setOption(Options  option,
+void ParticleSystem::setOption(Options  option,
                                   bool enabled,
                                   float param)
 {
@@ -90,17 +92,17 @@ void ofxLabFlexParticleSystem::setOption(Options  option,
     
 }
 
-ofxLabFlexVectorField* ofxLabFlexParticleSystem::getVectorField()
+VectorField* ParticleSystem::getVectorField()
 {
     return &_vectorField;
 }
 
-ofxLabFlexParticleSystem::Container const * ofxLabFlexParticleSystem::getParticles()
+ParticleSystem::Container const * ParticleSystem::getParticles()
 {
     return &_particles;
 }
 
-ofxLabFlexParticle* ofxLabFlexParticleSystem::getParticle( unsigned long uniqueID )
+Particle* ParticleSystem::getParticle( unsigned long uniqueID )
 {
 	Poco::ScopedLock<ofMutex> scopeLock(_updateLock);
 	Iterator it;
@@ -112,14 +114,14 @@ ofxLabFlexParticle* ofxLabFlexParticleSystem::getParticle( unsigned long uniqueI
 }
     
 
-void ofxLabFlexParticleSystem::applyVectorField( const ofxLabFlexVectorField& externalVectorField )
+void ParticleSystem::applyVectorField( const VectorField& externalVectorField )
 {
     ofVec2f vecFieldForce;
     
     Iterator it = _particles.begin();
     for( it = _particles.begin(); it != _particles.end(); ++it )
     {
-        ofxLabFlexParticle* p = it->second;
+        Particle* p = it->second;
         vecFieldForce = externalVectorField.getForceFromPos(p->x, p->y);
     
         p->acceleration += vecFieldForce / MIN(p->mass, MIN_PARTICLE_MASS) / VEC_FIELD_FORCE_DIVIDER;
@@ -127,7 +129,7 @@ void ofxLabFlexParticleSystem::applyVectorField( const ofxLabFlexVectorField& ex
 }
 
 
-void ofxLabFlexParticleSystem::update()
+void ParticleSystem::update()
 {
     
     // create a scoped lock
@@ -138,7 +140,7 @@ void ofxLabFlexParticleSystem::update()
     Iterator it = _particles.begin();
     for( it = _particles.begin(); it != _particles.end(); ++it )
     {
-        ofxLabFlexParticle* p = it->second;
+        Particle* p = it->second;
         p->update();
         
         if ( _options & DETECT_COLLISIONS ){
@@ -148,7 +150,7 @@ void ofxLabFlexParticleSystem::update()
             for(++inner_it; inner_it != _particles.end(); ++inner_it )
             {
                 
-                ofxLabFlexParticle* inner_p = inner_it->second;
+                Particle* inner_p = inner_it->second;
                 
                 //if( (*it)->distance(*(*inner_it)) <= (*it)->radius + (*inner_it)->radius ) {
                 //    //cout << "collision!" << endl;
@@ -377,7 +379,7 @@ void ofxLabFlexParticleSystem::update()
 }
 
 /*
-void ofxLabFlexParticleSystem::draw()
+void ParticleSystem::draw()
 {
     cerr << "The regular draw is not yet tested." << endl;
     
@@ -387,7 +389,7 @@ void ofxLabFlexParticleSystem::draw()
     pContainerIterator it;
     for( it = _particles.begin(); it != _particles.end(); ++it )
     {
-        ofxLabFlexParticle* p = (it->second);
+        Particle* p = (it->second);
         p->draw();
 
         if( _worldType == SQUARE) {
@@ -409,7 +411,7 @@ void ofxLabFlexParticleSystem::draw()
 }
  */
 
-bool ofxLabFlexParticleSystem::shouldDraw( ofxLabFlexParticle* p, 
+bool ParticleSystem::shouldDraw( Particle* p, 
                                     const ofRectangle& ws,
                                     float rotation)
 {
@@ -436,7 +438,7 @@ bool ofxLabFlexParticleSystem::shouldDraw( ofxLabFlexParticle* p,
     return false;
 }
 
-void ofxLabFlexParticleSystem::draw( const ofRectangle& ws,
+void ParticleSystem::draw( const ofRectangle& ws,
                               float rotation )
 {
 
@@ -449,7 +451,7 @@ void ofxLabFlexParticleSystem::draw( const ofRectangle& ws,
     
     for( it = _particles.begin(); it != _particles.end(); ++it )
     {
-        ofxLabFlexParticle* p = (it->second);
+        Particle* p = (it->second);
         
         if( shouldDraw( p, ws, rotation ) ) {
             p->draw();
@@ -514,7 +516,7 @@ void ofxLabFlexParticleSystem::draw( const ofRectangle& ws,
     }
 }
 
-void ofxLabFlexParticleSystem::addParticle( ofxLabFlexParticle* p )
+void ParticleSystem::addParticle( Particle* p )
 {
     Poco::ScopedLock<ofMutex> scopeLock(_updateLock);
     
@@ -529,7 +531,7 @@ void ofxLabFlexParticleSystem::addParticle( ofxLabFlexParticle* p )
 
 }
 
-void ofxLabFlexParticleSystem::printIDs()
+void ParticleSystem::printIDs()
 {
     Iterator it;
     for( it = _particles.begin(); it != _particles.end(); ++it ) {
@@ -539,7 +541,7 @@ void ofxLabFlexParticleSystem::printIDs()
     
 }
 
-bool ofxLabFlexParticleSystem::removeParticle( unsigned long uniqueID )
+bool ParticleSystem::removeParticle( unsigned long uniqueID )
 {
     //cout << "trying to delete particle " << uniqueID << endl;
     if( !_updateLock.tryLock() ) {
@@ -564,7 +566,7 @@ bool ofxLabFlexParticleSystem::removeParticle( unsigned long uniqueID )
 }
 
 
-void ofxLabFlexParticleSystem::clear(){
+void ParticleSystem::clear(){
     // TO DO: wait for lock
     //while( !_updateLock.tryLock() ){}
     if ( _particles.size() == 0 ){
@@ -577,7 +579,7 @@ void ofxLabFlexParticleSystem::clear(){
     _updateLock.unlock();
 }
 
-void ofxLabFlexParticleSystem::multForce( const ofVec3f& force )
+void ParticleSystem::multForce( const ofVec3f& force )
 {
     Iterator it;
     for( it = _particles.begin(); it != _particles.end(); ++it ) {
@@ -585,7 +587,7 @@ void ofxLabFlexParticleSystem::multForce( const ofVec3f& force )
     }
 }
 
-void ofxLabFlexParticleSystem::addForce( const ofVec3f& force )
+void ParticleSystem::addForce( const ofVec3f& force )
 {
     Iterator it;
     for( it = _particles.begin(); it != _particles.end(); ++it ) {
@@ -593,7 +595,7 @@ void ofxLabFlexParticleSystem::addForce( const ofVec3f& force )
     }
 }
 
-int ofxLabFlexParticleSystem::getNumParticles()
+int ParticleSystem::getNumParticles()
 {
     return _particles.size();
 }
