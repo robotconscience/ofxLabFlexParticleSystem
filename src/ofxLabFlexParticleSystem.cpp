@@ -195,7 +195,7 @@ void ofxLabFlexParticleSystem::update()
         if ( _worldType == SQUARE ){
             
             // top wall
-            if( p->y <= 0 ) {
+            if( p->y < 0 && p->velocity.y <= 0) {
                 // if callback and override, only call callback
                 if( _wallCallbacks[TOP_WALL] && _wallCallbackOverride[TOP_WALL] ) {
                 
@@ -205,7 +205,7 @@ void ofxLabFlexParticleSystem::update()
                     // otherwise do our internal logic, and hit the callback if one exists
 
                     if( _options & VERTICAL_WRAP ) {
-                        p->y += p->velocity.y + _worldBox.y;
+                        p->y = _worldBox.y;
                     } else {
                         // put it in the right direction
                         p->velocity.y = (p->velocity.y < 0 ? p->velocity.y * -1 : p->velocity.y);
@@ -217,39 +217,16 @@ void ofxLabFlexParticleSystem::update()
                     }
                 }
             }
-            
-            // right wall
-            if( p->x - p->radius >= _worldBox.x ) {
-                if( _wallCallbacks[RIGHT_WALL] && _wallCallbackOverride[RIGHT_WALL] ) {
-           
-                    _wallCallbacks[RIGHT_WALL](it->second);
-            
-                } else {
-                    
-                    if( _options & HORIZONTAL_WRAP ) {
-                        p->x += p->velocity.x - _worldBox.x;
-                        p->x = 0;
-                    } else {
-                        p->velocity.x = (p->velocity.x > 0 ? p->velocity.x * -1 : p->velocity.x);
-                        p->x += p->velocity.x;
-                    }
-                    
-                    if( _wallCallbacks[RIGHT_WALL] ) {
-                        _wallCallbacks[RIGHT_WALL](it->second);
-                    }
-                }
-            }
-            
             // bottom wall
-            if( p->y >= _worldBox.y ) {
+            else if( p->y > _worldBox.y && p->velocity.y > 0) {
                 if( _wallCallbacks[BOTTOM_WALL] && _wallCallbackOverride[BOTTOM_WALL] ) {
-             
+                    
                     _wallCallbacks[BOTTOM_WALL](it->second);
-             
+                    
                 } else {
                     
                     if( _options & VERTICAL_WRAP ) {
-                        p->y += p->velocity.y - _worldBox.y;
+                        p->y = 1;
                     } else {
                         p->velocity.y = (p->velocity.y > 0 ? p->velocity.y * -1 : p->velocity.y);
                         p->y += p->velocity.y;
@@ -261,8 +238,28 @@ void ofxLabFlexParticleSystem::update()
                 }
             }
             
+            // right wall
+            if( p->x - p->radius > _worldBox.x && p->velocity.x > 0) {
+                if( _wallCallbacks[RIGHT_WALL] && _wallCallbackOverride[RIGHT_WALL] ) {
+           
+                    _wallCallbacks[RIGHT_WALL](it->second);
+            
+                } else {
+                    
+                    if( _options & HORIZONTAL_WRAP ) {
+                        p->x = 0;
+                    } else {
+                        p->velocity.x = (p->velocity.x > 0 ? p->velocity.x * -1 : p->velocity.x);
+                        p->x += p->velocity.x;
+                    }
+                    
+                    if( _wallCallbacks[RIGHT_WALL] ) {
+                        _wallCallbacks[RIGHT_WALL](it->second);
+                    }
+                }
+            } else
             // left wall
-            if( p->x + p->radius <= 0 ) {
+            if( p->x < 0 && p->velocity.x <= 0) {
                 if( _wallCallbacks[LEFT_WALL] && _wallCallbackOverride[LEFT_WALL] ) {
               
                     _wallCallbacks[LEFT_WALL](it->second);
@@ -270,7 +267,6 @@ void ofxLabFlexParticleSystem::update()
                 } else {
                     
                     if( _options & HORIZONTAL_WRAP ) {
-                        p->x += p->velocity.x + _worldBox.x;
                         p->x = _worldBox.x;
                     } else {
                         p->velocity.x = (p->velocity.x < 0 ? p->velocity.x * -1 : p->velocity.x);
@@ -461,54 +457,53 @@ void ofxLabFlexParticleSystem::draw( const ofRectangle& ws,
         
         
         // need to check if the particle wrap is inside
-        if( _worldType == SQUARE ) {
-            
-            if( _options & HORIZONTAL_WRAP ) {
-                if( p->x + p->radius > _worldBox.x ) {
-                    // check right side of screen and wrap back to left if needed
-                    
-                    tempf = p->x;
-                    p->x -= _worldBox.x;
-                    if( shouldDraw( p, ws, rotation ) ) {
-                        p->draw();
-                    }
-                    p->x = tempf;
-                } else if ( p->x - p->radius < 0 ) {
-                    // check right side of screen and wrap back to right if needed
-                    
-                    tempf = p->x;
-                    tempf = p->x;
-                    p->x += _worldBox.x;
-                    if( shouldDraw( p, ws, rotation ) ) {
-                        p->draw();
-                    }
-                    p->x = tempf;                
-                }
-            }
-            
-            if( _options & VERTICAL_WRAP ) {
-                if( p->y + p->radius > _worldBox.y ) {
-                    // check bottom side of screen and wrap back to top if needed
-                    
-                    tempf = p->y;
-                    p->y -= _worldBox.y;
-                    if( shouldDraw( p, ws, rotation ) ) {
-                        p->draw();
-                    }
-                    p->y = tempf;
-                } else if ( p->y - p->radius < 0 ) {
-                    // check top side of screen and wrap back to bottom if needed
-                    
-                    tempf = p->y;
-                    p->y += _worldBox.y;
-                    if( shouldDraw( p, ws, rotation ) ) {
-                        p->draw();
-                    }
-                    p->y = tempf;
-                }
-            }
-        }
-        
+//        if( _worldType == SQUARE ) {
+//            
+//            if( _options & HORIZONTAL_WRAP ) {
+//                if( p->x + p->radius > _worldBox.x ) {
+//                    // check right side of screen and wrap back to left if needed
+//                    
+//                    tempf = p->x;
+//                    p->x -= _worldBox.x;
+//                    if( shouldDraw( p, ws, rotation ) ) {
+//                        p->draw();
+//                    }
+//                    p->x = tempf;
+//                } else if ( p->x - p->radius < 0 ) {
+//                    // check right side of screen and wrap back to right if needed
+//                    
+//                    tempf = p->x;
+//                    tempf = p->x;
+//                    p->x += _worldBox.x;
+//                    if( shouldDraw( p, ws, rotation ) ) {
+//                        p->draw();
+//                    }
+//                    p->x = tempf;                
+//                }
+//            }
+//            
+//            if( _options & VERTICAL_WRAP ) {
+//                if( p->y + p->radius > _worldBox.y ) {
+//                    // check bottom side of screen and wrap back to top if needed
+//                    
+//                    tempf = p->y;
+//                    p->y -= _worldBox.y;
+//                    if( shouldDraw( p, ws, rotation ) ) {
+//                        p->draw();
+//                    }
+//                    p->y = tempf;
+//                } else if ( p->y - p->radius < 0 ) {
+//                    // check top side of screen and wrap back to bottom if needed
+//                    
+//                    tempf = p->y;
+//                    p->y += _worldBox.y;
+//                    if( shouldDraw( p, ws, rotation ) ) {
+//                        p->draw();
+//                    }
+//                    p->y = tempf;
+//                }
+//            }
+//        }
     }
     
     

@@ -61,13 +61,11 @@ void ofxLabFlexParticle::update(){
 
 void ofxLabFlexParticle::draw(){
 
-	ofSetColor(0, 0, 0);
-	ofCircle(*this, radius);
-    
     ofSetColor(255, 255, 255);
-	ofCircle(*this, radius * .5);
+	ofCircle(*this, radius );
 
-
+    ofSetColor(0);
+    ofDrawBitmapString(ofToString(uniqueID), x - 10, y );
 }
 
 void ofxLabFlexParticle::repel(const ofxLabFlexParticle& b)
